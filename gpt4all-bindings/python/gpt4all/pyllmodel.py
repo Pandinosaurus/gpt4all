@@ -10,13 +10,17 @@ class DualStreamProcessor:
     def __init__(self, stream=None):
         self.stream = stream
         self.output = ""
+        self.debug_clean = []
+        self.debug = []
 
     def write(self, text):
-        cleaned_text = re.sub(r"\n(?!\n)", "", text)
+        self.debug.append(text)
+        cleaned_text = re.sub('\n+', lambda x: '\n'*(len(x.group(0))-1), text)
+        self.debug_clean.append(cleaned_text)
         if self.stream is not None:
-            self.stream.write(cleaned_text)
+            self.stream.write(text)
             self.stream.flush()
-        self.output += cleaned_text
+        self.output += text
 
 
 # TODO: provide a config file to make this more robust
@@ -231,7 +235,9 @@ class LLModel:
         # Force new line
         print()
 
-        return stream_processor.output
+
+
+        return stream_processor.output, stream_processor.debug, stream_processor.debug_clean
 
     # Empty prompt callback
     @staticmethod
@@ -241,7 +247,7 @@ class LLModel:
     # Empty response callback method that just prints response to be collected
     @staticmethod
     def _response_callback(token_id, response):
-        print(response.decode('utf-8'))
+        sys.stdout.write(response.decode('utf-8'))
         return True
 
     # Empty recalculate callback

@@ -91,6 +91,7 @@ void llmodel_model_destroy(llmodel_model model) {
     else if (modelTypeInfo == typeid(LLamaModel)) { llmodel_llama_destroy(model);  }
     else if (modelTypeInfo == typeid(MPT))        { llmodel_mpt_destroy(model);    }
     else if (modelTypeInfo == typeid(Replit))     { llmodel_replit_destroy(model); }
+    else {fprintf(stderr, "Invalid Model Type, failed to destroy model\n");}
 }
 
 bool llmodel_loadModel(llmodel_model model, const char *model_path)
